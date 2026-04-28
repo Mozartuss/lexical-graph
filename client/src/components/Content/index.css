@@ -9,7 +9,7 @@ h6 {
 
 .lexical-workspace {
   --synsets-sidebar-width-ratio: 0.34;
-  --synsets-sidebar-width: clamp(20rem, calc(var(--synsets-sidebar-width-ratio) * 100vw), min(38rem, 52vw));
+  --synsets-sidebar-width: 34vw;
   position: relative;
   display: flex;
   height: 100%;

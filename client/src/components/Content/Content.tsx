@@ -25,7 +25,7 @@ const DEFAULT_SYNSTES_SIDEBAR_RATIO = 0.34;
 const MOBILE_BREAKPOINT_PX = 767;
 const MIN_SYNSTES_SIDEBAR_WIDTH_PX = 20 * 16;
 const MIN_GRAPH_STAGE_WIDTH_PX = 420;
-const MAX_SYNSTES_SIDEBAR_RATIO = 0.52;
+const MAX_SYNSTES_SIDEBAR_WIDTH_PX = 38 * 16;
 
 function readSynsetsSidebarCookie(): boolean {
   return readCookie(SYNSETS_SIDEBAR_COOKIE) === 'true';
@@ -39,7 +39,10 @@ function clampSynsetsSidebarRatio(ratio: number, viewportWidth: number): number 
   const minRatio = Math.min(0.9, MIN_SYNSTES_SIDEBAR_WIDTH_PX / viewportWidth);
   const maxRatio = Math.max(
     minRatio,
-    Math.min(MAX_SYNSTES_SIDEBAR_RATIO, (viewportWidth - MIN_GRAPH_STAGE_WIDTH_PX) / viewportWidth),
+    Math.min(
+      MAX_SYNSTES_SIDEBAR_WIDTH_PX / viewportWidth,
+      (viewportWidth - MIN_GRAPH_STAGE_WIDTH_PX) / viewportWidth,
+    ),
   );
 
   if (!Number.isFinite(ratio)) {
@@ -67,6 +70,7 @@ function Content({ query }: { query: string }): React.JSX.Element {
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(false);
   const [currentLemma, setCurrentLemma] = useState<string | null>(null);
   const [synsetsOpen, setSynsetsOpen] = useState(readSynsetsSidebarCookie);
+  const [viewportWidth, setViewportWidth] = useState(() => (typeof window === 'undefined' ? 1280 : window.innerWidth));
   const [synsetsSidebarRatio, setSynsetsSidebarRatio] = useState(readSynsetsSidebarWidthCookie);
   const [isResizingSynsetsSidebar, setIsResizingSynsetsSidebar] = useState(false);
   const resizeStateRef = useRef<{ startX: number; startRatio: number } | null>(null);
@@ -78,6 +82,8 @@ function Content({ query }: { query: string }): React.JSX.Element {
 
   useEffect(() => {
     const handleWindowResize = (): void => {
+      setViewportWidth(window.innerWidth);
+
       if (window.innerWidth <= MOBILE_BREAKPOINT_PX) {
         return;
       }
@@ -216,9 +222,14 @@ function Content({ query }: { query: string }): React.JSX.Element {
   ) : null;
   const synsetsVisible = synsetsOpen;
   const hasCurrentGraph = Boolean(currentLemma && graphData?.[currentLemma]);
+  const synsetsSidebarWidthPx = Math.round(synsetsSidebarRatio * viewportWidth);
   const workspaceStyle = {
     '--synsets-sidebar-width-ratio': String(synsetsSidebarRatio),
-  } as React.CSSProperties & { '--synsets-sidebar-width-ratio': string };
+    '--synsets-sidebar-width': `${synsetsSidebarWidthPx}px`,
+  } as React.CSSProperties & {
+    '--synsets-sidebar-width-ratio': string;
+    '--synsets-sidebar-width': string;
+  };
 
   const setSynsetsVisible = (isVisible: boolean): void => {
     setSynsetsOpen(isVisible);

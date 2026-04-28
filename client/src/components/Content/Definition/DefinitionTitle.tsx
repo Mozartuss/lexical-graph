@@ -1,7 +1,7 @@
-import Typography from 'antd/lib/typography';
+import { Typography } from 'antd';
 import React from 'react';
 
-const DefinitionTitle = (): JSX.Element => (
+const DefinitionTitle = (): React.JSX.Element => (
   <Typography.Title className="content__title">Synsets</Typography.Title>
 );
 

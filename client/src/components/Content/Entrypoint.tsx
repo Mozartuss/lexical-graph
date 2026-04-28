@@ -1,16 +1,11 @@
-import Col from 'antd/lib/grid/col';
-import Row from 'antd/lib/grid/row';
-import Search from 'antd/lib/input/Search';
-import Layout from 'antd/lib/layout';
-import React, { useEffect, useRef, useState } from 'react';
-import { useHistory, useParams, withRouter } from 'react-router-dom';
+import { Layout } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Content from './Content';
 
-function Entrypoint(): JSX.Element {
+function Entrypoint(): React.JSX.Element {
   const [query, setQuery] = useState<string | null>(null);
-  const { urlWord } = useParams();
-  const history = useHistory();
-  const ref = useRef(undefined);
+  const { urlWord } = useParams<{ urlWord?: string }>();
 
   useEffect(() => {
     setQuery(urlWord || null);
@@ -19,34 +14,19 @@ function Entrypoint(): JSX.Element {
     }
   }, [urlWord]);
 
-  const onSearch = (word: string): void => {
-    if (word !== query) {
-      history.push(`/${word}`);
-    }
-    // @ts-ignore
-    ref.current.input.state.value = '';
-  };
-
   return (
-    <Layout.Content>
+    <Layout.Content className="app-main">
       <div className="main__content">
-        <Row type="flex" justify="center" align="middle">
-          <Col md={16}>
-            <Search
-              placeholder="Search for a word, e.g. cat"
-              enterButton="Search"
-              size="large"
-              // @ts-ignore
-              ref={ref}
-              onSearch={onSearch}
-              className="word-search"
-            />
-          </Col>
-        </Row>
         {query && <Content query={query} />}
+        {!query && (
+          <div className="empty-search-state">
+            <h1>Explore WordNet as a lexical network</h1>
+            <p>Search for a word to map its synsets and relations.</p>
+          </div>
+        )}
       </div>
     </Layout.Content>
   );
 }
 
-export default withRouter(Entrypoint);
+export default Entrypoint;

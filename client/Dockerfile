@@ -1,12 +1,12 @@
-# BUILD
-FROM node:alpine as build
+FROM node:24-alpine
 
 WORKDIR /usr/src/app
 
-RUN apk update && apk add g++ python make git
+COPY package*.json ./
+RUN npm install
 
-COPY ./package.json /usr/src/app/package.json
-RUN cd /usr/src/app && npm install
+COPY . .
 
-COPY . /usr/src/app
-#RUN cd /usr/src/app && npm run build
+EXPOSE 3000
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

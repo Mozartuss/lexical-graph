@@ -1,6 +1,4 @@
 import { Application } from 'express';
-import path from 'path';
-import { STATIC_FOLDER } from '../constants/app.constants';
 
 export default class Controller {
   constructor(private app: Application) {
@@ -8,8 +6,12 @@ export default class Controller {
   }
 
   public routes(): void {
-    this.app.get('/*', (req, res) => {
-      res.sendFile(path.join(STATIC_FOLDER, 'index.html'));
+    this.app.get('/', (_req, res) => {
+      res.json({ name: 'lexical-graph-api', status: 'ok' });
+    });
+
+    this.app.get('/health', (_req, res) => {
+      res.json({ status: 'ok' });
     });
   }
 }

@@ -1,17 +1,46 @@
 import { Request, Response } from 'express';
-import { Aggregate, MongooseDocument } from 'mongoose';
 import Lemma from '../models/lemma.model';
 import { getPromisePerLemma, replaceUnderscores, splitGlossToExamples } from '../util/string.util';
 import { Definition, LemmaDefinition, LemmaToDefinition, QueryDefinition } from './lemma.types';
 
+const DEFAULT_SUGGESTION_LIMIT = 12;
+const MAX_SUGGESTION_LIMIT = 25;
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export default class LemmaService {
   public getAllLemmata(req: Request, res: Response): void {
-    Lemma.find({}, (error: Error, wordnet: MongooseDocument) => {
-      if (error) {
-        res.send(error);
-      }
-      res.json(wordnet);
-    });
+    Lemma.find({})
+      .lean()
+      .then((wordnet) => res.json(wordnet))
+      .catch((error) => res.status(500).send(error));
+  }
+
+  public getSuggestions(req: Request, res: Response): void {
+    const rawQuery = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+    const rawLimit = typeof req.query.limit === 'string' ? Number.parseInt(req.query.limit, 10) : DEFAULT_SUGGESTION_LIMIT;
+    const limit = Number.isFinite(rawLimit)
+      ? Math.min(Math.max(rawLimit, 1), MAX_SUGGESTION_LIMIT)
+      : DEFAULT_SUGGESTION_LIMIT;
+
+    if (rawQuery.length < 2) {
+      res.json([]);
+      return;
+    }
+
+    Lemma.find({ lemma: { $regex: `^${escapeRegex(rawQuery)}`, $options: 'i' } })
+      .select({ _id: 0, lemma: 1, pos: 1, synsets: 1 })
+      .sort({ lemma: 1, pos: 1 })
+      .limit(limit)
+      .lean()
+      .then((lemmata) => res.json(lemmata.map(({ lemma, pos, synsets }) => ({
+        lemma,
+        pos,
+        synsetCount: synsets?.length ?? 0,
+      }))))
+      .catch((error) => res.status(500).send(error));
   }
 
   /**
@@ -40,7 +69,7 @@ export default class LemmaService {
     return lemmaToSynset;
   }
 
-  static getAggregatedGlosses(lemma: string): Aggregate<QueryDefinition> {
+  static getAggregatedGlosses(lemma: string) {
     return Lemma.aggregate([
       { $match: { lemma } },
       { $unwind: '$synsets' },
@@ -88,13 +117,15 @@ export default class LemmaService {
   }
 
   public getGlosses(req: Request, res: Response): void {
-    const { word } = req.params;
+    const word = Array.isArray(req.params.word) ? req.params.word[0] : req.params.word;
     const promises = getPromisePerLemma(word, [LemmaService.getAggregatedGlosses]);
-    Promise.all(promises).then((results) => {
-      const filteredResults = results.filter((result) => result.length > 0);
-      res.json(LemmaService.formatGlosses(filteredResults));
-    }).catch((error) => {
-      res.send(error);
-    });
+    Promise.all(promises)
+      .then((results) => {
+        const filteredResults = results.filter((result) => result.length > 0);
+        res.json(LemmaService.formatGlosses(filteredResults));
+      })
+      .catch((error) => {
+        res.status(500).send(error);
+      });
   }
 }

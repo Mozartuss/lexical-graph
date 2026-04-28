@@ -1,15 +1,11 @@
-version: '3.7'
-
 services:
   db:
-    image: mongo:latest
-    restart: always
+    image: mongo:8
+    restart: unless-stopped
     volumes:
-      - wordnet_data:/data/db
+      - mongo_data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=Wordnet
-    expose:
-      - 27017
+      MONGO_INITDB_DATABASE: Wordnet
     ports:
       - 27017:27017
 
@@ -17,17 +13,16 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    command: [sh, -c, "npm run start"]
+    command: ["sh", "-c", "npm install && npm run dev"]
     volumes:
-      - node_modules_server:/usr/src/app/node_modules
+      - ./server:/usr/src/app
     environment:
-      - DO_IMPORT_WORDNET=0
-      - NODE_ENV=development
-    expose:
-      - 8080
+      DO_IMPORT_WORDNET: 0
+      MONGO_URI: mongodb://db:27017/Wordnet
+      NODE_ENV: development
     ports:
       - "8080:8080"
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
       - db
 
@@ -35,16 +30,16 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    command: [sh, -c, "npm run start"]
+    command: ["sh", "-c", "npm install && npm run dev -- --host 0.0.0.0"]
     volumes:
-      - node_modules_client:/usr/src/app/node_modules
+      - ./client:/usr/src/app
+    environment:
+      VITE_API_PROXY_TARGET: http://server:8080
     ports:
       - "3000:3000"
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
       - server
 
 volumes:
-  wordnet_data:
-  node_modules_client:
-  node_modules_server:
+  mongo_data:

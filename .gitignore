@@ -35,6 +35,8 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+client/node_modules/
+server/node_modules/
 
 # TypeScript v1 declaration files
 typings/
@@ -56,6 +58,23 @@ typings/
 
 # dotenv environment variables file
 .env
+.env.*
+client/.env
+client/.env.*
+server/.env
+server/.env.*
 
 # next.js build output
 .next
+
+# Build artifacts
+client/dist/
+server/dist/
+client/.vite/
+server/.vite/
+
+# Local OS/editor files
+.DS_Store
+
+# Local TLS assets
+nginx/certs/

@@ -1,9 +1,33 @@
 import { SimulationLinkDatum, SimulationNodeDatum } from 'd3';
 // Lemma API
 export type POS = 'a' | 'n' | 'r' | 'v' | 's';
+export type LemmaSuggestion = { lemma: string; pos: POS; synsetCount: number };
 export type SynsetDefinition = { gloss: string; examples?: string[]; terms: string[] };
 export type PosToGlosses = Record<POS, SynsetDefinition[]>;
 export type LemmaToDefinition = Record<string, PosToGlosses>;
+export type WiktionaryEntry = {
+  word: string;
+  language: string;
+  etymology?: string;
+  pronunciations: string[];
+  forms: string[];
+  alternativeForms: string[];
+  senses: Array<{
+    pos: string;
+    definition: string;
+    labels: string[];
+  }>;
+  synonyms: string[];
+  hypernyms: string[];
+  hyponyms: string[];
+  meronyms: string[];
+  holonyms: string[];
+  derivedTerms: string[];
+  relatedTerms: string[];
+  descendants: string[];
+  seeAlso: string[];
+  sourceUrl: string;
+};
 
 // Synset API
 export type RelationType =

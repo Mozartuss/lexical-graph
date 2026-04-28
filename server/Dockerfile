@@ -1,14 +1,12 @@
-# BUILD
-FROM node:alpine as build
+FROM node:24-alpine
 
 WORKDIR /usr/src/app
 
-RUN apk update && apk add g++ python make
+COPY package*.json ./
+RUN npm install
 
-COPY ./package.json /usr/src/app/package.json
-RUN cd /usr/src/app && npm install
+COPY . .
 
-COPY ./data/wordnet.lemmata.json /usr/src/app/data
-COPY ./data/wordnet.synsets.json /usr/src/app/data
+EXPOSE 8080
 
-COPY . /usr/src/app
+CMD ["npm", "run", "dev"]

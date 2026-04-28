@@ -1,10 +1,75 @@
+:root {
+  color-scheme: light;
+  --app-bg: #ffffff;
+  --panel-bg: #ffffff;
+  --header-bg: rgba(255, 255, 255, 0.92);
+  --header-fg: #17202a;
+  --header-hover: rgba(23, 32, 42, 0.06);
+  --text-primary: rgba(0, 0, 0, 0.88);
+  --text-secondary: rgba(0, 0, 0, 0.65);
+  --border-color: #e8e8e8;
+  --graph-edge: rgba(58, 85, 104, 0.42);
+  --graph-grid: rgba(22, 34, 43, 0.045);
+  --graph-bg: #f7fafb;
+  --graph-bg-glow: rgba(104, 166, 199, 0.18);
+  --graph-panel-bg: rgba(255, 255, 255, 0.88);
+  --graph-panel-border: rgba(23, 32, 42, 0.14);
+  --graph-panel-shadow: rgba(38, 56, 72, 0.13);
+  --graph-control-bg: rgba(255, 255, 255, 0.78);
+  --graph-control-fg: rgba(18, 28, 38, 0.88);
+  --graph-label-stroke: rgba(247, 250, 251, 0.94);
+  --graph-tooltip-title: #111c27;
+  --graph-tooltip-copy: rgba(28, 42, 56, 0.82);
+  --graph-node-hover: #4e4e4e;
+  --graph-label: #53727a;
+  --graph-label-halo: rgba(255, 255, 255, 0.9);
+  --tooltip-bg: rgba(255, 255, 255, 0.96);
+  --tooltip-border: #d8dee6;
+  --tooltip-text: #18212b;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --app-bg: #090d11;
+  --panel-bg: #101820;
+  --header-bg: rgba(7, 10, 14, 0.88);
+  --header-fg: #f3f6f8;
+  --header-hover: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.9);
+  --text-secondary: rgba(255, 255, 255, 0.68);
+  --border-color: rgba(255, 255, 255, 0.14);
+  --graph-edge: rgba(214, 223, 232, 0.24);
+  --graph-grid: rgba(221, 232, 240, 0.065);
+  --graph-bg: #142033;
+  --graph-bg-glow: rgba(51, 76, 99, 0.24);
+  --graph-panel-bg: rgba(7, 12, 20, 0.9);
+  --graph-panel-border: rgba(255, 255, 255, 0.16);
+  --graph-panel-shadow: rgba(0, 0, 0, 0.22);
+  --graph-control-bg: rgba(16, 24, 36, 0.72);
+  --graph-control-fg: rgba(245, 249, 255, 0.9);
+  --graph-label-stroke: rgba(20, 32, 51, 0.92);
+  --graph-tooltip-title: #ffffff;
+  --graph-tooltip-copy: rgba(245, 249, 255, 0.84);
+  --graph-node-hover: #dbe4ec;
+  --graph-label: rgba(221, 235, 240, 0.72);
+  --graph-label-halo: rgba(12, 20, 27, 0.84);
+  --tooltip-bg: rgba(15, 24, 31, 0.96);
+  --tooltip-border: rgba(255, 255, 255, 0.14);
+  --tooltip-text: #edf3f8;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Space Grotesk', 'Avenir Next', 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--app-bg);
+  color: var(--text-primary);
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 code {

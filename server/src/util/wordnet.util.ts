@@ -19,13 +19,13 @@ async function insertChunks(model: Model<any>, array: (LemmaType | SynsetType)[]
 
 export default function importWordnet(): void {
   try {
-    const models = [
+    const models: Array<{ model: Model<any>; name: string }> = [
       {
-        model: Synset,
+        model: Synset as Model<any>,
         name: 'synsets',
       },
       {
-        model: Lemma,
+        model: Lemma as Model<any>,
         name: 'lemmata',
       },
     ];

@@ -1,43 +1,39 @@
-import Switch, { SwitchProps } from 'antd/lib/switch';
+import { Switch } from 'antd';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { RelationType } from '../../../api/types';
 import WordnetAPI from '../../../api/WordnetAPI';
 
-interface Options extends SwitchProps {
-  id: string;
-}
-
 type SwitchGroupProps = {
   type: RelationType;
-  disabled: boolean;
-  defaultChecked: boolean;
-  onChange: (checked: boolean, event: MouseEvent) => void;
+  checked: boolean;
+  onChange: (type: RelationType, checked: boolean) => void;
 };
 
-export default function SwitchGroup(props: SwitchGroupProps): JSX.Element {
+export default function SwitchGroup(props: SwitchGroupProps): React.JSX.Element {
   const {
-    type, onChange, disabled, defaultChecked,
+    type, onChange, checked,
   } = props;
-  const options: Options = {
-    id: type,
-    title: type,
-    onChange,
-    disabled,
-    defaultChecked,
-    size: 'small',
-  };
-  if (disabled) {
-    options.checked = false;
-  }
+  const switchId = `relation-switch-${type}`;
+
   return (
-    <>
-      <Switch {...options} />
-      <label htmlFor={type}>
-        <Link to={`/${type}`} style={{ color: WordnetAPI.colors[type] }}>
+    <div className="switches__control">
+      <Switch
+        id={switchId}
+        title={type}
+        onChange={(checked) => onChange(type, checked)}
+        checked={checked}
+        size="small"
+      />
+      <label htmlFor={switchId} className="switches__label">
+        <span
+          className="switches__dot"
+          style={{ backgroundColor: WordnetAPI.colors[type] }}
+          aria-hidden="true"
+        />
+        <span className="switches__text">
           {type.replace('_', ' ')}
-        </Link>
+        </span>
       </label>
-    </>
+    </div>
   );
 }

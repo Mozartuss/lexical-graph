@@ -1,7 +1,7 @@
-import Typography from 'antd/lib/typography';
+import { Typography } from 'antd';
 import React from 'react';
 
-const RelationsTitle = (): JSX.Element => (
+const RelationsTitle = (): React.JSX.Element => (
   <Typography.Title level={2} className="content__title">
     Lexical relations
     <sup>

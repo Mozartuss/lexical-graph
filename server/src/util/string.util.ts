@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import lemmatize from 'wink-lemmatizer';
 
 export const capitalize = (string: string): string => (

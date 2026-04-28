@@ -1,0 +1,23 @@
+{
+  "name": "lexical-graph",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "install:client": "npm --prefix client install",
+    "install:server": "npm --prefix server install",
+    "install:all": "npm run install:client && npm run install:server",
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build:client": "npm --prefix client run build",
+    "build:server": "npm --prefix server run build",
+    "build": "npm run build:client && npm run build:server",
+    "test:client": "npm --prefix client run test",
+    "test": "npm run test:client",
+    "docker:dev": "docker compose up --build",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up --build -d"
+  }
+}

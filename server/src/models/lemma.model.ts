@@ -1,11 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
-
-export interface LemmaType {
-  _id: string;
-  lemma: string;
-  pos: string;
-  synsets: string[];
-}
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 export const LemmaSchema = new Schema({
   _id: String,
@@ -14,4 +7,6 @@ export const LemmaSchema = new Schema({
   synsets: [String],
 });
 
-export default mongoose.model('Lemma', LemmaSchema);
+export type LemmaType = InferSchemaType<typeof LemmaSchema> & { _id: string };
+
+export default model<LemmaType>('Lemma', LemmaSchema);

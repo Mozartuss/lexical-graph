@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Aggregate } from 'mongoose';
 import Lemma from '../models/lemma.model';
 import Synset from '../models/synset.model';
 import { getPromisePerLemma, replaceUnderscores } from '../util/string.util';
@@ -115,7 +114,7 @@ export default class SynsetService {
     return root;
   }
 
-  private static getAggregatedRelations(word: string, max?: number): Aggregate<any> {
+  private static getAggregatedRelations(word: string, max?: number) {
     return Lemma.aggregate([
       { $match: { lemma: word } },
       {
@@ -154,7 +153,7 @@ export default class SynsetService {
           nodes: 1,
         },
       },
-    ]);
+    ] as any[]);
   }
 
   private static getEdges(): Record<string, any>[] {
@@ -283,16 +282,18 @@ export default class SynsetService {
   }
 
   private static sendPromiseResults(promises: Promise<any>[], res: Response): void {
-    Promise.all(promises).then((results) => {
-      const filteredResults = results.filter((result) => result.length > 0);
-      res.json(SynsetService.formatRelations(filteredResults));
-    }).catch((error) => {
-      res.send(error);
-    });
+    Promise.all(promises)
+      .then((results) => {
+        const filteredResults = results.filter((result) => result.length > 0);
+        res.json(SynsetService.formatRelations(filteredResults));
+      })
+      .catch((error) => {
+        res.status(500).send(error);
+      });
   }
 
   public getAllRelations(req: Request, res: Response): void {
-    const { word } = req.params;
+    const word = Array.isArray(req.params.word) ? req.params.word[0] : req.params.word;
     const promises = getPromisePerLemma(
       word, [SynsetService.getAggregatedRelations],
     );
@@ -300,7 +301,8 @@ export default class SynsetService {
   }
 
   public getSomeRelations(req: Request, res: Response): void {
-    const { word, max } = req.params;
+    const word = Array.isArray(req.params.word) ? req.params.word[0] : req.params.word;
+    const max = Array.isArray(req.params.max) ? req.params.max[0] : req.params.max;
     const promises = getPromisePerLemma(
       word, [SynsetService.getAggregatedRelations],
       [parseInt(max, 10)],
@@ -310,7 +312,8 @@ export default class SynsetService {
 
   public getAllSynsets(req: Request, res: Response): void {
     Synset.find({})
+      .lean()
       .then((result) => res.json(result))
-      .catch((error) => res.send(error));
+      .catch((error) => res.status(500).send(error));
   }
 }

@@ -1,7 +1,13 @@
-import axios, { AxiosResponse } from 'axios';
-import { LemmaPosToHierarchy, LemmaToDefinition, RelationType } from './types';
+import axios from 'axios';
+import {
+  LemmaPosToHierarchy,
+  LemmaSuggestion,
+  LemmaToDefinition,
+  RelationType,
+  WiktionaryEntry,
+} from './types';
 
-axios.defaults.baseURL = '/';
+axios.defaults.baseURL = import.meta.env.BASE_URL;
 
 export default class WordnetAPI {
   public static RELATION_TYPES: RelationType[] = [
@@ -16,7 +22,7 @@ export default class WordnetAPI {
     'cause',
   ];
 
-  public static colors = {
+  public static colors: Record<RelationType, string> = {
     antonym: '#d95f02',
     attribute: '#a6761d',
     cause: '#1b9e77',
@@ -34,15 +40,27 @@ export default class WordnetAPI {
     v: 'verb',
     r: 'adverb',
     s: 'adjective',
-  };
+  } as const;
 
   public static async getDefinitions(word: string): Promise<LemmaToDefinition> {
-    const response: AxiosResponse = await axios.get(`/api/wordnet/lemma/${word}`);
-    return response.data;
+    const { data } = await axios.get<LemmaToDefinition>(`api/wordnet/lemma/${word}`);
+    return data;
+  }
+
+  public static async getSuggestions(query: string): Promise<LemmaSuggestion[]> {
+    const { data } = await axios.get<LemmaSuggestion[]>('api/wordnet/lemma/suggest', {
+      params: { q: query, limit: 12 },
+    });
+    return data;
   }
 
   public static async getRelations(word: string): Promise<LemmaPosToHierarchy> {
-    const response: AxiosResponse = await axios.get(`/api/wordnet/synset/${word}`);
-    return response.data;
+    const { data } = await axios.get<LemmaPosToHierarchy>(`api/wordnet/synset/${word}`);
+    return data;
+  }
+
+  public static async getWiktionaryEntry(word: string): Promise<WiktionaryEntry | null> {
+    const { data } = await axios.get<WiktionaryEntry | null>(`api/wiktionary/${word}`);
+    return data;
   }
 }

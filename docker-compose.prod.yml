@@ -1,0 +1,54 @@
+services:
+  db:
+    image: mongo:8
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: Wordnet
+    networks:
+      - wordnet_internal
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    environment:
+      DO_IMPORT_WORDNET: ${DO_IMPORT_WORDNET:-0}
+      MONGO_URI: mongodb://db:27017/Wordnet
+      NODE_ENV: production
+      PORT: 8080
+    expose:
+      - "8080"
+    depends_on:
+      - db
+    networks:
+      - wordnet_internal
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+      args:
+        VITE_BASE_PATH: /wordnet/
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ${TLS_CERT_PATH:-./nginx/certs/fullchain.pem}:/etc/nginx/certs/fullchain.pem:ro
+      - ${TLS_KEY_PATH:-./nginx/certs/privkey.pem}:/etc/nginx/certs/privkey.pem:ro
+    depends_on:
+      - server
+    networks:
+      - wordnet_internal
+      - wordnet_public
+
+networks:
+  wordnet_internal:
+    internal: true
+  wordnet_public:
+
+volumes:
+  mongo_data:

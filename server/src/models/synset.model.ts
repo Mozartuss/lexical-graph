@@ -1,16 +1,8 @@
-import mongoose, { Schema } from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 export interface RelationType {
   rel: string;
   tgt: string;
-}
-
-export interface SynsetType {
-  _id: string;
-  pos: string;
-  word: string[];
-  edges: RelationType[];
-  gloss: string;
 }
 
 const RelationSchema = new Schema({
@@ -26,4 +18,6 @@ const SynsetSchema = new Schema({
   gloss: String,
 });
 
-export default mongoose.model('Synset', SynsetSchema);
+export type SynsetType = InferSchemaType<typeof SynsetSchema> & { _id: string };
+
+export default model<SynsetType>('Synset', SynsetSchema);

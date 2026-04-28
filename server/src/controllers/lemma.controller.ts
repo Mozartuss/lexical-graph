@@ -10,6 +10,8 @@ export default class LemmaController {
   }
 
   public routes(): void {
+    this.app.route('/api/wordnet/lemma/suggest')
+      .get(this.lemmaService.getSuggestions.bind(this.lemmaService));
     this.app.route('/api/wordnet/lemma/:word')
       .get(this.lemmaService.getGlosses.bind(this.lemmaService));
     this.app.route('/api/wordnet/lemma')

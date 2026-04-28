@@ -1,8 +1,7 @@
-import Result from 'antd/lib/result';
-import Typography from 'antd/lib/typography';
+import { Result, Typography } from 'antd';
 import React from 'react';
 
-function EmptyResult({ word }: { word: string }): JSX.Element {
+function EmptyResult({ word }: { word: string }): React.JSX.Element {
   const message = (
     <Typography.Text>
       The word &quot;
